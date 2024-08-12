@@ -155,7 +155,6 @@ class UploadArquivoView(GenericAPIView):
 
         command = f"ls media/{usuario.username}/{nome_arquivo}"
 
-        print(command)
         result = os.popen(command).read()
 
         return Response({"message": f"Arquivo '{nome_arquivo}' excluído com sucesso", "response": result}, status=status.HTTP_200_OK)
