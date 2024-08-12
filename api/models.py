@@ -1,12 +1,8 @@
 import os
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
-
-
-def user_file_path(instance, filename):
-    # Cria o caminho baseado na matrícula do usuário
-    matricula = instance.usuario.matricula or 'default'
-    return os.path.join('arquivos', matricula, filename)
+from django.db.models.signals import post_save, post_delete
+from django.dispatch import receiver
 
 
 class UserManager(BaseUserManager):
@@ -32,6 +28,8 @@ class UserManager(BaseUserManager):
 
 class Usuario(AbstractUser):
     matricula = models.TextField(max_length=14, null=True, blank=False)
+    numero_arquivos = models.IntegerField(
+        default=0)
     objects = UserManager()
 
     first_name = None
@@ -45,7 +43,7 @@ class Usuario(AbstractUser):
 
 
 def user_directory_path(instance, filename):
-    return "/{0}/{1}".format(instance.usuario.username, filename)
+    return "{0}/{1}".format(instance.usuario.username, filename)
 
 
 class Arquivo(models.Model):
@@ -57,8 +55,19 @@ class Arquivo(models.Model):
     def __str__(self):
         return f'{self.descricao or "Arquivo"} de {self.usuario.username}'
 
+    def save(self, *args, **kwargs):
+        if self.pk is None:
+            self.usuario.numero_arquivos += 1
+            self.usuario.save()
+        super().save(*args, **kwargs)
+
+
+@receiver(post_delete, sender=Arquivo)
+def decrement_numero_arquivos(sender, instance, **kwargs):
+    instance.usuario.numero_arquivos -= 1
+    instance.usuario.save()
+
 
 class Informacoes(models.Model):
     usuario = models.OneToOneField(Usuario, on_delete=models.CASCADE)
-    minha_hash = models.TextField(max_length=200, blank=True, null=True)
     nome_completo = models.TextField(max_length=200, blank=True, null=True)

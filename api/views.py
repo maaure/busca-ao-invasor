@@ -55,7 +55,7 @@ class MeusArquivosView(GenericAPIView):
 
     def get(self, request):
         matricula = request.data.get('matricula')
-        result = os.popen(f"ls ~/arquivos/{matricula}").read()
+        result = os.popen(f"ls media/{matricula}").read()
         return Response({"result": result})
 
 
@@ -88,9 +88,6 @@ class AlterarSenhaView(GenericAPIView):
 )
 class MeuCadastroView(GenericAPIView):
 
-    def get_serializer_class(self):
-        return MeuCadastroSerializer
-
     def get(self, request):
         usuario = request.user
         if not usuario.is_authenticated:
@@ -100,7 +97,7 @@ class MeuCadastroView(GenericAPIView):
         conn = sqlite3.connect('db.sqlite3')
         cursor = conn.cursor()
         query = f"""
-        SELECT i.minha_hash, i.nome_completo
+        SELECT u.numero_arquivos, i.nome_completo
         FROM api_informacoes i
         JOIN api_usuario u ON u.id = i.usuario_id
         WHERE u.username = {matricula}
@@ -109,7 +106,7 @@ class MeuCadastroView(GenericAPIView):
         result = cursor.fetchall()
 
         informacoes = [InformacoesSerializer(
-            {"nome": r[1], "hash_secreta": r[0]}).data for r in result]
+            {"nome_completo": r[1], "numero_arquivos": r[0]}).data for r in result]
         return Response({"result": informacoes})
 
 

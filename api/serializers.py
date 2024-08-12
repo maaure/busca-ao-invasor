@@ -12,15 +12,10 @@ class AlterarSenhaSerializer(serializers.Serializer):
 
 
 class InformacoesSerializer(serializers.Serializer):
-    nome = serializers.CharField()
-    hash_secreta = serializers.CharField()
+    nome_completo = serializers.CharField()
+    numero_arquivos = serializers.CharField()
 
 
 class UploadArquivoSerializer(serializers.Serializer):
     arquivo = serializers.FileField()
     descricao = serializers.CharField(required=False, allow_blank=True)
-
-
-class MeuCadastroSerializer(serializers.Serializer):
-    nome_completo = serializers.CharField()
-    hash_secreta = serializers.CharField()

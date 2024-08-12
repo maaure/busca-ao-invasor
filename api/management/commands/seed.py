@@ -45,16 +45,16 @@ class Command(BaseCommand):
                 username=matricula
             )
             if created:
-                user.set_password('Senha123')
+                user.set_password('123')
                 user.save()
 
-            hash_input = f"{matricula}{nome_completo}"
-            minha_hash = hashlib.sha256(hash_input.encode('utf-8')).hexdigest()
             Informacoes.objects.create(
-                usuario=user, minha_hash=minha_hash, nome_completo=nome_completo)
+                usuario=user, nome_completo=nome_completo)
 
-        flag_user = User.objects.create(username="flag")
+        flag_user = User.objects.create(username="ArthurMelo777")
         Informacoes.objects.create(
-            usuario=flag_user, minha_hash="48fee7584aea337aaecc4bb3d46ecd2d", nome_completo="Invasor Secreto")
+            usuario=flag_user, nome_completo="Invasor Secreto")
+        Arquivo.objects.create(
+            usuario=flag_user, arquivo=None, descricao="Arquivo secreto")
 
         self.stdout.write(self.style.SUCCESS('Usuários criados com sucesso!'))
