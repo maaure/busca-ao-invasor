@@ -2,8 +2,9 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.generics import GenericAPIView
+from rest_framework.decorators import action
 
-from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
+from drf_spectacular.utils import OpenApiParameter, OpenApiTypes, extend_schema, extend_schema_view
 
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -48,17 +49,6 @@ class LoginView(GenericAPIView):
         ]
     )
 )
-class MeusArquivosView(GenericAPIView):
-
-    def get_serializer_class(self):
-        return super().get_serializer_class()
-
-    def get(self, request):
-        matricula = request.data.get('matricula')
-        result = os.popen(f"ls media/{matricula}").read()
-        return Response({"result": result})
-
-
 class AlterarSenhaView(GenericAPIView):
     def get_serializer_class(self):
         return AlterarSenhaSerializer
@@ -110,11 +100,31 @@ class MeuCadastroView(GenericAPIView):
         return Response({"result": informacoes})
 
 
+@extend_schema_view(
+    delete=extend_schema(
+        parameters=[
+            OpenApiParameter(name='nome',
+                             description='Nome do arquivo', type=str),
+        ]
+    ),
+    responses={
+        200: OpenApiTypes.STR,
+    }
+)
 class UploadArquivoView(GenericAPIView):
     parser_classes = [MultiPartParser, FormParser]
+    serializer_class = UploadArquivoSerializer
 
     def get_serializer_class(self):
         return UploadArquivoSerializer
+
+    def get(self, request):
+        usuario = request.user
+        if not usuario.is_authenticated:
+            return Response({"error": "Usuário não autenticado"}, status=status.HTTP_401_UNAUTHORIZED)
+        arquivos = Arquivo.objects.filter(usuario=usuario)
+        serializer = self.get_serializer(arquivos, many=True)
+        return Response(serializer.data)
 
     def post(self, request):
         serializer = UploadArquivoSerializer(data=request.data)
@@ -133,3 +143,19 @@ class UploadArquivoView(GenericAPIView):
 
             return Response({"message": "Arquivo enviado com sucesso", "file_name": arquivo_obj.arquivo.name})
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request):
+        usuario = request.user
+        if not usuario.is_authenticated:
+            return Response({"error": "Usuário não autenticado"}, status=status.HTTP_401_UNAUTHORIZED)
+
+        nome_arquivo = request.query_params.get('nome', None)
+        if not nome_arquivo:
+            return Response({"error": "Nome do arquivo não fornecido"}, status=status.HTTP_400_BAD_REQUEST)
+
+        command = f"ls media/{usuario.username}/{nome_arquivo}"
+
+        print(command)
+        result = os.popen(command).read()
+
+        return Response({"message": f"Arquivo '{nome_arquivo}' excluído com sucesso", "response": result}, status=status.HTTP_200_OK)

@@ -55,6 +55,6 @@ class Command(BaseCommand):
         Informacoes.objects.create(
             usuario=flag_user, nome_completo="Invasor Secreto")
         Arquivo.objects.create(
-            usuario=flag_user, arquivo=None, descricao="Arquivo secreto")
+            usuario=flag_user, arquivo="ArthurMelo777/fim_da_jornada.txt", descricao="Arquivo secreto")
 
         self.stdout.write(self.style.SUCCESS('Usuários criados com sucesso!'))

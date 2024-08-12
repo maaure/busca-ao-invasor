@@ -2,3 +2,4 @@ django
 django-ninja
 django-cors-headers
 djangorestframework-simplejwt
+drf_spectacular

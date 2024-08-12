@@ -117,8 +117,8 @@ SIMPLE_JWT = {
 }
 
 SPECTACULAR_SETTINGS = {
-    'TITLE': 'Guarde seus arquivos 100% confiável',
-    'DESCRIPTION': 'Your project description',
+    'TITLE': 'PlácidoDrive',
+    'DESCRIPTION': 'A forma mais segura de guarda arquivos na internet!',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
     'COMPONENT_SPLIT_REQUEST': True
