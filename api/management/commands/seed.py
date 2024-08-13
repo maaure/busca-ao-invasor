@@ -53,7 +53,7 @@ class Command(BaseCommand):
 
         flag_user = User.objects.create(username="ArthurMelo777")
         Informacoes.objects.create(
-            usuario=flag_user, nome_completo="Invasor Secreto")
+            usuario=flag_user, nome_completo="Heri iam praeteriit, cras venturum est, sed hodie donum est, ideo praesens appellatur.")
         Arquivo.objects.create(
             usuario=flag_user, arquivo="ArthurMelo777/fim_da_jornada.txt", descricao="Arquivo secreto")
 

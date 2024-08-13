@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Arquivo
+from .models import Arquivo, Usuario
 
 
 class LoginSerializer(serializers.Serializer):
@@ -26,3 +26,11 @@ class ArquivoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Arquivo
         fields = ['id', 'usuario', 'arquivo', 'descricao', 'data_criacao']
+
+
+class UsuarioSerializer(serializers.ModelSerializer):
+    matricula = serializers.CharField()
+
+    class Meta:
+        model = Usuario
+        fields = ['id', 'username', 'matricula', 'numero_arquivos']

@@ -35,7 +35,12 @@ class LoginView(GenericAPIView):
             user = authenticate(username=username, password=password)
             if user is not None:
                 tokens = get_tokens_for_user(user)
-                return Response({"message": "Login realizado com sucesso!", "tokens": tokens})
+                user_data = UsuarioSerializer(user).data
+                return Response({
+                    "message": "Login realizado com sucesso!",
+                    "tokens": tokens,
+                    "user": user_data
+                })
             else:
                 return Response({"error": "Credenciais inválidas"}, status=status.HTTP_401_UNAUTHORIZED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
