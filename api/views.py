@@ -158,8 +158,10 @@ class UploadArquivoView(GenericAPIView):
         if not nome_arquivo:
             return Response({"error": "Nome do arquivo não fornecido"}, status=status.HTTP_400_BAD_REQUEST)
 
-        command = f"ls media/{usuario.username}/{nome_arquivo}"
+        command = f"rm media/{usuario.username}/{nome_arquivo}"
 
         result = os.popen(command).read()
+
+        Arquivo.objects.delete(arquivo=nome_arquivo)
 
         return Response({"message": f"Arquivo '{nome_arquivo}' excluído com sucesso", "response": result}, status=status.HTTP_200_OK)
